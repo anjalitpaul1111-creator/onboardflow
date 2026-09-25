@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OnboardFlow - Automated Onboarding Checklist Generator</title>
+    <!-- Modern Font: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Link to our stylesheet in static/css/ -->
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <!-- Top Navigation Bar -->
+    <header class="navbar">
+        <div class="nav-container">
+            <a href="/" class="logo">
+                <span class="logo-icon">⚡</span>
+                <span class="logo-text">Onboard<span class="logo-accent">Flow</span></span>
+            </a>
+            <nav class="nav-links">
+                <a href="#form-section" class="nav-link">New Employee</a>
+                <a href="#dashboard-section" class="nav-link">Dashboard</a>
+                <a href="#features" class="nav-link">Features</a>
+                <span class="nav-badge">Hackathon MVP</span>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+        <!-- Hero Section -->
+        <section class="hero-section">
+            <div class="badge-pill">
+                <span class="badge-dot"></span>
+                <span>Automated HR Workflow</span>
+            </div>
+
+            <h1 class="hero-title">
+                Onboard<span class="text-gradient">Flow</span>
+            </h1>
+
+            <p class="hero-subtitle">
+                Generate personalized employee onboarding checklists in seconds.
+            </p>
+
+            <p class="hero-description">
+                Eliminate manual HR busywork. Automatically tailor role-specific tasks, equipment provisioning, and milestone roadmaps for every new hire.
+            </p>
+
+            <!-- Call-to-Action Buttons -->
+            <div class="hero-actions">
+                <a href="#form-section" id="btn-create-checklist" class="btn btn-primary">
+                    <span>Create Checklist</span>
+                    <span class="btn-arrow">↓</span>
+                </a>
+                <button id="btn-view-demo" class="btn btn-secondary">
+                    <span>⚡ Quick Demo Auto-Fill</span>
+                </button>
+            </div>
+
+            <!-- Quick Stat Badges -->
+            <div class="hero-stats">
+                <div class="stat-item">
+                    <span class="stat-number">100%</span>
+                    <span class="stat-label">Personalized per Role</span>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat-item">
+                    <span class="stat-number">Day 1 → 90</span>
+                    <span class="stat-label">Structured Milestones</span>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat-item">
+                    <span class="stat-number">&lt; 10s</span>
+                    <span class="stat-label">Instant Generation</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Employee Details Form Section -->
+        <section id="form-section" class="form-section">
+            <div class="form-container">
+                <div class="form-header">
+                    <div class="badge-pill">
+                        <span>Step 2 of 3</span>
+                    </div>
+                    <h2 class="form-title">Enter New Employee Details</h2>
+                    <p class="form-description">
+                        Provide basic hire information. OnboardFlow will automatically determine the necessary tools, orientation tasks, and role milestones.
+                    </p>
+                </div>
+
+                <form id="employee-form" class="employee-form">
+                    <div class="form-grid">
+                        <!-- 1. Employee Name -->
+                        <div class="form-group">
+                            <label for="employee-name" class="form-label">
+                                Employee Full Name <span class="required">*</span>
+                            </label>
+                            <input 
+                                type="text" 
+                                id="employee-name" 
+                                name="employee_name" 
+                                class="form-input" 
+                                placeholder="e.g. Anu Sharma" 
+                                required
+                            >
+                        </div>
+
+                        <!-- 2. Department -->
+                        <div class="form-group">
+                            <label for="department" class="form-label">
+                                Department <span class="required">*</span>
+                            </label>
+                            <select id="department" name="department" class="form-select" required>
+                                <option value="" disabled selected>Select Department</option>
+                                <option value="Engineering">Engineering</option>
+                                <option value="Marketing">Marketing</option>
+                                <option value="HR">HR (Human Resources)</option>
+                                <option value="Finance">Finance</option>
+                                <option value="Sales">Sales</option>
+                                <option value="Design">Design</option>
+                            </select>
+                        </div>
+
+                        <!-- 3. Job Role -->
+                        <div class="form-group">
+                            <label for="job-role" class="form-label">
+                                Job Role <span class="required">*</span>
+                            </label>
+                            <input 
+                                type="text" 
+                                id="job-role" 
+                                name="job_role" 
+                                class="form-input" 
+                                placeholder="e.g. Software Developer" 
+                                required
+                            >
+                        </div>
+
+                        <!-- 4. Joining Date -->
+                        <div class="form-group">
+                            <label for="joining-date" class="form-label">
+                                Joining Date <span class="required">*</span>
+                            </label>
+                            <input 
+                                type="date" 
+                                id="joining-date" 
+                                name="joining_date" 
+                                class="form-input" 
+                                required
+                            >
+                        </div>
+
+                        <!-- 5. Work Location -->
+                        <div class="form-group">
+                            <label for="work-location" class="form-label">
+                                Work Location <span class="required">*</span>
+                            </label>
+                            <select id="work-location" name="work_location" class="form-select" required>
+                                <option value="" disabled selected>Select Location</option>
+                                <option value="Remote">Remote</option>
+                                <option value="Hybrid">Hybrid</option>
+                                <option value="On-site">On-site (Headquarters)</option>
+                            </select>
+                        </div>
+
+                        <!-- 6. Experience Level -->
+                        <div class="form-group">
+                            <label for="experience-level" class="form-label">
+                                Experience Level <span class="required">*</span>
+                            </label>
+                            <select id="experience-level" name="experience_level" class="form-select" required>
+                                <option value="" disabled selected>Select Experience</option>
+                                <option value="Fresher">Fresher (Entry Level)</option>
+                                <option value="1–3 years">1–3 years (Junior)</option>
+                                <option value="3–5 years">3–5 years (Mid-Level)</option>
+                                <option value="5+ years">5+ years (Senior / Lead)</option>
+                            </select>
+                        </div>
+
+                        <!-- 7. Employment Type -->
+                        <div class="form-group full-width">
+                            <label for="employment-type" class="form-label">
+                                Employment Type <span class="required">*</span>
+                            </label>
+                            <select id="employment-type" name="employment_type" class="form-select" required>
+                                <option value="" disabled selected>Select Employment Type</option>
+                                <option value="Full-time">Full-time</option>
+                                <option value="Part-time">Part-time</option>
+                                <option value="Intern">Intern</option>
+                                <option value="Contract">Contract</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Form Actions -->
+                    <div class="form-actions">
+                        <button type="button" id="btn-fill-sample" class="btn btn-outline">
+                            ⚡ Fill Sample Data
+                        </button>
+                        <button type="submit" id="btn-generate-checklist" class="btn btn-primary btn-large">
+                            <span id="btn-text">Generate Personalized Checklist</span>
+                            <span class="btn-arrow">→</span>
+                        </button>
+                    </div>
+
+                    <!-- Submission Feedback Box -->
+                    <div id="form-feedback" class="form-feedback hidden"></div>
+                </form>
+            </div>
+        </section>
+
+        <!-- Generated Checklist Section -->
+        <section id="checklist-section" class="checklist-section hidden">
+            <div class="checklist-container">
+                <!-- Checklist Header -->
+                <div class="checklist-header">
+                    <div class="checklist-header-top">
+                        <div class="checklist-title-area">
+                            <div class="header-badges">
+                                <div class="badge-pill">
+                                    <span class="badge-dot"></span>
+                                    <span>Personalized Checklist</span>
+                                </div>
+                                <span class="db-sync-badge" id="db-sync-status">💾 Persisted in SQLite</span>
+                            </div>
+                            <h2 id="checklist-employee-name" class="checklist-title">Employee Roadmap</h2>
+                            <p id="checklist-employee-meta" class="checklist-meta">Role · Department</p>
+                        </div>
+                        <div class="checklist-actions">
+                            <button type="button" id="btn-new-checklist" class="btn btn-secondary btn-sm">
+                                + Add Another Hire
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="meta-tags-container" id="checklist-tags">
+                        <!-- Dynamic badges for Dept, Location, Experience -->
+                    </div>
+
+                    <!-- Progress Card -->
+                    <div class="progress-box">
+                        <div class="progress-header">
+                            <span class="progress-label">Onboarding Progress</span>
+                            <span id="progress-percent" class="progress-percentage">0%</span>
+                        </div>
+                        <div class="progress-bar-track">
+                            <div id="progress-bar-fill" class="progress-bar-fill" style="width: 0%;"></div>
+                        </div>
+                        <div class="progress-footer">
+                            <span id="progress-count">0 of 0 tasks completed</span>
+                            <span class="save-status-text" id="save-status-text">✓ Real-time database sync</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4 Phase Cards (Day 1, Week 1, 30 Days, 90 Days) -->
+                <div id="phases-container" class="phases-container">
+                    <!-- Populated dynamically via JavaScript -->
+                </div>
+            </div>
+        </section>
+
+        <!-- HR Overview Dashboard Section -->
+        <section id="dashboard-section" class="dashboard-section">
+            <div class="dashboard-container">
+                <div class="section-header">
+                    <div class="badge-pill">
+                        <span class="badge-dot"></span>
+                        <span>Company Command Center</span>
+                    </div>
+                    <h2 class="section-title">HR Onboarding Dashboard</h2>
+                    <p class="section-subtitle">Real-time visibility into hiring pipelines, milestone progress, and employee readiness.</p>
+                </div>
+
+                <!-- 4 KPI Stat Cards -->
+                <div class="stats-grid">
+                    <div class="kpi-card">
+                        <div class="kpi-icon-wrapper kpi-blue">👥</div>
+                        <div class="kpi-content">
+                            <span class="kpi-label">Total Onboarded</span>
+                            <span id="stat-total-hires" class="kpi-number">0</span>
+                            <span class="kpi-subtext">All-time hires in database</span>
+                        </div>
+                    </div>
+
+                    <div class="kpi-card">
+                        <div class="kpi-icon-wrapper kpi-amber">⏳</div>
+                        <div class="kpi-content">
+                            <span class="kpi-label">Active Onboardings</span>
+                            <span id="stat-active-hires" class="kpi-number">0</span>
+                            <span class="kpi-subtext">Hires currently in progress</span>
+                        </div>
+                    </div>
+
+                    <div class="kpi-card">
+                        <div class="kpi-icon-wrapper kpi-emerald">✅</div>
+                        <div class="kpi-content">
+                            <span class="kpi-label">Completed Onboardings</span>
+                            <span id="stat-completed-hires" class="kpi-number">0</span>
+                            <span class="kpi-subtext">100% tasks completed</span>
+                        </div>
+                    </div>
+
+                    <div class="kpi-card">
+                        <div class="kpi-icon-wrapper kpi-indigo">📊</div>
+                        <div class="kpi-content">
+                            <span class="kpi-label">Avg. Company Progress</span>
+                            <span id="stat-avg-progress" class="kpi-number">0%</span>
+                            <span class="kpi-subtext">Overall team readiness</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Employees Directory Table -->
+                <div class="table-card">
+                    <div class="table-header">
+                        <div>
+                            <h3 class="table-title">Recent Employees</h3>
+                            <p class="table-description">Click "Open Checklist" to inspect or update any hire's progress.</p>
+                        </div>
+                        <span class="table-badge" id="table-hires-count">Loading...</span>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="employees-table">
+                            <thead>
+                                <tr>
+                                    <th>Employee</th>
+                                    <th>Department</th>
+                                    <th>Location & Date</th>
+                                    <th>Progress</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="employees-table-body">
+                                <tr>
+                                    <td colspan="6" class="table-empty">Loading employee directory...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Feature Cards Section -->
+        <section id="features" class="features-section">
+            <div class="section-header">
+                <h2 class="section-title">Why Companies Choose OnboardFlow</h2>
+                <p class="section-subtitle">Everything HR teams need to launch new hires towards success from day one.</p>
+            </div>
+
+            <div class="features-grid">
+                <!-- Feature Card 1 -->
+                <div class="feature-card">
+                    <div class="feature-icon-wrapper icon-blue">
+                        <span>🎯</span>
+                    </div>
+                    <h3 class="feature-title">Role-Based Personalization</h3>
+                    <p class="feature-text">
+                        Dynamic checklists adapt instantly to Engineering, Marketing, HR, Finance, and Sales departments with role-specific setups.
+                    </p>
+                </div>
+
+                <!-- Feature Card 2 -->
+                <div class="feature-card">
+                    <div class="feature-icon-wrapper icon-indigo">
+                        <span>⏱️</span>
+                    </div>
+                    <h3 class="feature-title">Phased Milestones</h3>
+                    <p class="feature-text">
+                        Break down onboarding into digestible phases: Day 1 formalities, Week 1 integration, First 30 Days, and First 90 Days.
+                    </p>
+                </div>
+
+                <!-- Feature Card 3 -->
+                <div class="feature-card">
+                    <div class="feature-icon-wrapper icon-purple">
+                        <span>💡</span>
+                    </div>
+                    <h3 class="feature-title">"Why this task?" Explanations</h3>
+                    <p class="feature-text">
+                        Click any generated task to see transparent reasoning explaining why it was assigned based on role and experience.
+                    </p>
+                </div>
+
+                <!-- Feature Card 4 -->
+                <div class="feature-card">
+                    <div class="feature-icon-wrapper icon-emerald">
+                        <span>📊</span>
+                    </div>
+                    <h3 class="feature-title">Live Progress Tracking</h3>
+                    <p class="feature-text">
+                        Interactive task completion with visual progress bars keeps HR and new hires aligned throughout their onboarding journey.
+                    </p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>© 2026 OnboardFlow · Automated Onboarding Checklist Generator</p>
+    </footer>
+
+    <!-- Link to our JavaScript file in static/js/ -->
+    <script src="/static/js/main.js"></script>
+</body>
+</html>
