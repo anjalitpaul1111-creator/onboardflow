@@ -293,11 +293,16 @@ document.addEventListener("DOMContentLoaded", () => {
                 })
             });
 
-            const data = await response.json();
-
             if (!response.ok) {
-                throw new Error(data.error || "Failed to update task in database");
+                let errorMsg = `Failed to update task (Status ${response.status})`;
+                try {
+                    const errData = await response.json();
+                    if (errData && errData.error) errorMsg = errData.error;
+                } catch (_) {}
+                throw new Error(errorMsg);
             }
+
+            const data = await response.json();
 
             // Update item completed class for strikethrough styling
             if (isChecked) {
@@ -581,11 +586,23 @@ document.addEventListener("DOMContentLoaded", () => {
                     body: JSON.stringify(employeeData)
                 });
 
-                const data = await response.json();
-
                 if (!response.ok) {
-                    throw new Error(data.error || "Failed to generate checklist");
+                    let errorMsg = `Server error (${response.status})`;
+                    try {
+                        const errData = await response.json();
+                        if (errData && errData.error) errorMsg = errData.error;
+                    } catch (_) {
+                        const rawText = await response.text();
+                        if (rawText.includes("could not be found") || response.status === 404) {
+                            errorMsg = "API endpoint not found (404). Backend serverless function is initializing.";
+                        } else {
+                            errorMsg = rawText.slice(0, 100);
+                        }
+                    }
+                    throw new Error(errorMsg);
                 }
+
+                const data = await response.json();
 
                 console.log("Checklist created & saved to SQLite:", data);
 

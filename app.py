@@ -2,11 +2,32 @@ from flask import Flask, render_template, request, jsonify
 from datetime import datetime, timedelta
 import sqlite3
 import os
+import shutil
+import tempfile
 
-# Initialize Flask application
-app = Flask(__name__)
+# Resolve base directory
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'onboardflow.db')
+# Initialize Flask application with explicit template and static paths
+app = Flask(
+    __name__,
+    template_folder=os.path.join(BASE_DIR, 'templates'),
+    static_folder=os.path.join(BASE_DIR, 'static'),
+    static_url_path='/static'
+)
+
+# On Vercel (and other serverless platforms), the deployment filesystem is read-only.
+# SQLite requires write access for WAL/journal and INSERTs, so we use tempfile directory when on Vercel.
+if os.environ.get("VERCEL"):
+    DB_PATH = os.path.join(tempfile.gettempdir(), 'onboardflow.db')
+    seed_db = os.path.join(BASE_DIR, 'onboardflow.db')
+    if not os.path.exists(DB_PATH) and os.path.exists(seed_db):
+        try:
+            shutil.copy2(seed_db, DB_PATH)
+        except Exception as e:
+            print(f"Notice: Could not copy seed DB: {e}")
+else:
+    DB_PATH = os.path.join(BASE_DIR, 'onboardflow.db')
 
 def get_db_connection():
     """Returns a connection to the SQLite database with Row support."""
