@@ -1,5 +1,5 @@
 // ==========================================================================
-// OnboardFlow Client-Side Logic (Step 9: HR Dashboard & Real-Time Sync)
+// OnboardFlow Client-Side Logic (Step 11: UI/UX Enhancements)
 // ==========================================================================
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -7,6 +7,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // State
     let currentEmployeeId = null;
+    let currentEmployeeData = null;
 
     // DOM Elements - Forms & Controls
     const employeeForm = document.getElementById("employee-form");
@@ -35,6 +36,74 @@ document.addEventListener("DOMContentLoaded", () => {
     const statAvgProgress = document.getElementById("stat-avg-progress");
     const tableHiresCount = document.getElementById("table-hires-count");
     const employeesTableBody = document.getElementById("employees-table-body");
+
+    // DOM Elements - Why Task Modal (Step 10)
+    const whyModal = document.getElementById("why-task-modal");
+    const modalTaskTitle = document.getElementById("modal-task-title");
+    const modalTaskReason = document.getElementById("modal-task-reason");
+    const modalContextTags = document.getElementById("modal-context-tags");
+    const modalCloseBtn = document.getElementById("modal-close-btn");
+    const modalGotItBtn = document.getElementById("modal-got-it-btn");
+
+    // Toast Notification System (Step 11)
+    function showToast(message, type = "success") {
+        const container = document.getElementById("toast-container");
+        if (!container) return;
+
+        const toast = document.createElement("div");
+        toast.className = `toast toast-${type}`;
+        const icon = type === "success" ? "✓" : "ℹ️";
+        toast.innerHTML = `<span>${icon}</span><span>${message}</span>`;
+
+        container.appendChild(toast);
+
+        setTimeout(() => {
+            toast.style.opacity = "0";
+            toast.style.transform = "translateX(40px)";
+            setTimeout(() => toast.remove(), 350);
+        }, 3200);
+    }
+
+    function openWhyTaskModal(title, reason) {
+        if (!whyModal) return;
+        if (modalTaskTitle) modalTaskTitle.textContent = title;
+        if (modalTaskReason) modalTaskReason.textContent = reason;
+
+        if (modalContextTags && currentEmployeeData) {
+            const deptKey = (currentEmployeeData.department || "engineering").toLowerCase();
+            const typeKey = (currentEmployeeData.employment_type || "full-time").toLowerCase();
+            const typeClass = typeKey === "intern" ? "tag-type-intern" : (typeKey === "contract" ? "tag-type-contract" : "");
+
+            modalContextTags.innerHTML = `
+                <span class="meta-tag tag-dept-${deptKey}">🏢 ${currentEmployeeData.department}</span>
+                <span class="meta-tag">💼 ${currentEmployeeData.role}</span>
+                <span class="meta-tag">📍 ${currentEmployeeData.location}</span>
+                <span class="meta-tag">🎓 ${currentEmployeeData.experience}</span>
+                <span class="meta-tag ${typeClass}">📄 ${currentEmployeeData.employment_type}</span>
+            `;
+        }
+
+        whyModal.classList.remove("hidden");
+    }
+
+    function closeWhyTaskModal() {
+        if (whyModal) {
+            whyModal.classList.add("hidden");
+        }
+    }
+
+    if (modalCloseBtn) modalCloseBtn.addEventListener("click", closeWhyTaskModal);
+    if (modalGotItBtn) modalGotItBtn.addEventListener("click", closeWhyTaskModal);
+    if (whyModal) {
+        whyModal.addEventListener("click", (e) => {
+            if (e.target === whyModal) closeWhyTaskModal();
+        });
+    }
+    document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && whyModal && !whyModal.classList.contains("hidden")) {
+            closeWhyTaskModal();
+        }
+    });
 
     // Sample employee data for 1-click hackathon demonstration
     const sampleEmployee = {
@@ -84,11 +153,25 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // Helper: Update progress bar display
+    // Helper: Update progress bar display and celebration banner
     function displayProgress(completedCount, totalTasks, percentage) {
         if (progressBarFill) progressBarFill.style.width = `${percentage}%`;
         if (progressPercent) progressPercent.textContent = `${percentage}%`;
         if (progressCount) progressCount.textContent = `${completedCount} of ${totalTasks} tasks completed`;
+
+        // 100% Celebration Banner (Step 11)
+        const celebrationBanner = document.getElementById("celebration-banner");
+        const celebrationDesc = document.getElementById("celebration-desc");
+        if (celebrationBanner) {
+            if (percentage === 100 && totalTasks > 0) {
+                celebrationBanner.classList.remove("hidden");
+                if (currentEmployeeData && celebrationDesc) {
+                    celebrationDesc.textContent = `${currentEmployeeData.name} has completed all ${totalTasks} onboarding tasks and is 100% ramped up!`;
+                }
+            } else {
+                celebrationBanner.classList.add("hidden");
+            }
+        }
     }
 
     // =========================================================================
@@ -186,6 +269,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (response.ok) {
                 const data = await response.json();
                 renderChecklist(data, false);
+                showToast(`Loaded onboarding roadmap for ${data.employee.name}`, "info");
             }
         } catch (err) {
             console.error("Error loading employee checklist:", err);
@@ -230,12 +314,15 @@ document.addEventListener("DOMContentLoaded", () => {
                 saveStatusText.style.color = "#10b981"; // Green color
             }
 
+            // Real-time Toast notification (Step 11)
+            showToast(`✓ Task updated · Progress is now ${data.progress_percentage}%`, "success");
+
             // Keep the HR Dashboard in sync in real-time!
             fetchDashboardStats();
 
         } catch (err) {
             console.error("Error saving task status:", err);
-            alert("Could not save task to database: " + err.message);
+            showToast("Could not save task to database: " + err.message, "info");
             // Revert checkbox state
             const cb = taskItemElement.querySelector(".task-checkbox");
             if (cb) cb.checked = !isChecked;
@@ -245,6 +332,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Helper: Render the checklist
     function renderChecklist(data, isInitialLoad = false) {
         currentEmployeeId = data.employee_id;
+        currentEmployeeData = data.employee;
         localStorage.setItem("onboardflow_active_emp_id", currentEmployeeId);
 
         const emp = data.employee;
@@ -267,6 +355,19 @@ document.addEventListener("DOMContentLoaded", () => {
             <span class="meta-tag ${typeClass}">💼 ${emp.employment_type}</span>
         `;
 
+        // Update Phase Filter counts (Step 11)
+        const countAll = document.getElementById("count-all");
+        const countDay1 = document.getElementById("count-day-1");
+        const countWeek1 = document.getElementById("count-week-1");
+        const countDay30 = document.getElementById("count-day-30");
+        const countDay90 = document.getElementById("count-day-90");
+
+        if (countAll) countAll.textContent = data.total_tasks || 0;
+        if (countDay1) countDay1.textContent = phases.day_1 ? phases.day_1.tasks.length : 0;
+        if (countWeek1) countWeek1.textContent = phases.week_1 ? phases.week_1.tasks.length : 0;
+        if (countDay30) countDay30.textContent = phases.day_30 ? phases.day_30.tasks.length : 0;
+        if (countDay90) countDay90.textContent = phases.day_90 ? phases.day_90.tasks.length : 0;
+
         // Clear existing phases
         phasesContainer.innerHTML = "";
 
@@ -278,6 +379,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const card = document.createElement("div");
             card.className = "phase-card";
+            card.setAttribute("data-phase-key", key);
 
             let tasksHtml = "";
             phase.tasks.forEach((t) => {
@@ -321,7 +423,12 @@ document.addEventListener("DOMContentLoaded", () => {
                         <h3 class="phase-title">${phase.label}</h3>
                         <p class="phase-desc">${phase.description}</p>
                     </div>
-                    <span class="phase-count-badge">${phase.tasks.length} tasks</span>
+                    <div class="phase-header-actions">
+                        <button type="button" class="btn-complete-phase" data-phase-key="${key}">
+                            ⚡ Complete Phase
+                        </button>
+                        <span class="phase-count-badge">${phase.tasks.length} tasks</span>
+                    </div>
                 </div>
                 <ul class="task-list">
                     ${tasksHtml}
@@ -342,13 +449,42 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         });
 
-        // Attach event listeners to all "Why this task?" buttons
+        // Attach event listeners to all "Why this task?" buttons (Step 10 Modal)
         const whyButtons = document.querySelectorAll(".btn-why-task");
         whyButtons.forEach((btn) => {
             btn.addEventListener("click", () => {
                 const title = btn.getAttribute("data-title");
                 const reason = btn.getAttribute("data-reason");
-                alert(`💡 Personalization Reasoning:\n\nTask: "${title}"\n\nWhy this task?\n${reason}`);
+                openWhyTaskModal(title, reason);
+            });
+        });
+
+        // Attach event listeners to "⚡ Complete Phase" buttons (Step 11)
+        const completePhaseButtons = document.querySelectorAll(".btn-complete-phase");
+        completePhaseButtons.forEach((btn) => {
+            btn.addEventListener("click", async () => {
+                const card = btn.closest(".phase-card");
+                if (!card) return;
+
+                const unchecked = card.querySelectorAll(".task-checkbox:not(:checked)");
+                if (unchecked.length === 0) {
+                    showToast("All tasks in this phase are already completed!", "info");
+                    return;
+                }
+
+                btn.disabled = true;
+                btn.textContent = "Updating...";
+
+                for (const cb of unchecked) {
+                    const taskId = cb.getAttribute("data-task-id");
+                    const taskItem = cb.closest(".task-item");
+                    cb.checked = true;
+                    await toggleTaskInDatabase(taskId, true, taskItem);
+                }
+
+                btn.disabled = false;
+                btn.textContent = "⚡ Complete Phase";
+                showToast(`⚡ All ${unchecked.length} tasks in this phase marked completed!`, "success");
             });
         });
 
@@ -367,6 +503,25 @@ document.addEventListener("DOMContentLoaded", () => {
             checklistSection.scrollIntoView({ behavior: "smooth" });
         }
     }
+
+    // Step 11: Setup Phase Filter Tabs
+    const filterButtons = document.querySelectorAll(".filter-btn");
+    filterButtons.forEach((btn) => {
+        btn.addEventListener("click", () => {
+            filterButtons.forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+
+            const selectedPhase = btn.getAttribute("data-phase");
+            const allCards = document.querySelectorAll(".phase-card");
+            allCards.forEach((c) => {
+                if (selectedPhase === "all" || c.getAttribute("data-phase-key") === selectedPhase) {
+                    c.style.display = "block";
+                } else {
+                    c.style.display = "none";
+                }
+            });
+        });
+    });
 
     // Auto-Restore Checklist from SQLite on Page Refresh!
     async function restoreChecklistIfSaved() {
@@ -443,6 +598,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 // Render checklist on the page
                 renderChecklist(data, false);
+
+                // Toast notification
+                showToast(`🎉 Generated ${data.total_tasks} tasks for ${employeeData.name}!`, "success");
 
                 // Update the Dashboard immediately with the new hire
                 fetchDashboardStats();

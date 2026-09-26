@@ -257,6 +257,24 @@
                     </div>
                 </div>
 
+                <!-- Celebration Banner (shown when 100% complete) -->
+                <div id="celebration-banner" class="celebration-banner hidden">
+                    <span class="celebration-icon">🎉</span>
+                    <div class="celebration-text">
+                        <h4 class="celebration-title">Onboarding Fully Completed!</h4>
+                        <p id="celebration-desc" class="celebration-desc">Employee has completed all milestones and is fully ramped up for autonomous work.</p>
+                    </div>
+                </div>
+
+                <!-- Phase Filter Tabs (Step 11) -->
+                <div class="phase-filters" id="phase-filters">
+                    <button type="button" class="filter-btn active" data-phase="all">All Milestones (<span id="count-all">0</span>)</button>
+                    <button type="button" class="filter-btn" data-phase="day_1">Day 1 (<span id="count-day-1">0</span>)</button>
+                    <button type="button" class="filter-btn" data-phase="week_1">Week 1 (<span id="count-week-1">0</span>)</button>
+                    <button type="button" class="filter-btn" data-phase="day_30">30 Days (<span id="count-day-30">0</span>)</button>
+                    <button type="button" class="filter-btn" data-phase="day_90">90 Days (<span id="count-day-90">0</span>)</button>
+                </div>
+
                 <!-- 4 Phase Cards (Day 1, Week 1, 30 Days, 90 Days) -->
                 <div id="phases-container" class="phases-container">
                     <!-- Populated dynamically via JavaScript -->
@@ -406,6 +424,52 @@
     <footer class="footer">
         <p>© 2026 OnboardFlow · Automated Onboarding Checklist Generator</p>
     </footer>
+
+    <!-- Why This Task? Explanation Modal (Step 10) -->
+    <div id="why-task-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="modal-task-title">
+        <div class="modal-card">
+            <div class="modal-header">
+                <div class="modal-badge-wrapper">
+                    <span class="modal-icon">💡</span>
+                    <div>
+                        <h3 class="modal-heading">Why was this task generated?</h3>
+                        <span class="modal-subheading">Personalization Logic Context</span>
+                    </div>
+                </div>
+                <button type="button" id="modal-close-btn" class="modal-close-x" aria-label="Close modal">✕</button>
+            </div>
+
+            <div class="modal-body">
+                <div class="modal-field">
+                    <span class="modal-label">Assigned Task</span>
+                    <div id="modal-task-title" class="modal-task-name">Task Name</div>
+                </div>
+
+                <div class="modal-reason-box">
+                    <div class="modal-reason-header">
+                        <span>🎯 Personalization Engine Reasoning</span>
+                    </div>
+                    <p id="modal-task-reason" class="modal-reason-text">Task justification text goes here.</p>
+                </div>
+
+                <div class="modal-field">
+                    <span class="modal-label">Contributing Profile Attributes</span>
+                    <div id="modal-context-tags" class="modal-tags">
+                        <!-- Dynamically filled with tags -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" id="modal-got-it-btn" class="btn btn-primary">
+                    Got it!
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Toast Notification Container (Step 11) -->
+    <div id="toast-container" class="toast-container"></div>
 
     <!-- Link to our JavaScript file in static/js/ -->
     <script src="/static/js/main.js"></script>
